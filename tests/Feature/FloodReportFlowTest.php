@@ -148,6 +148,53 @@ class FloodReportFlowTest extends TestCase
         $this->assertSame('pending', $report->fresh()->status);
     }
 
+    public function test_petugas_menu_badge_counts_reports_waiting_for_review(): void
+    {
+        $officer = $this->makeUser('petugas_bpbd');
+        $this->makeReport($this->makeUser('masyarakat'));
+
+        $clarification = $this->makeReport($this->makeUser('masyarakat'));
+        $clarification->update(['status' => 'needs_clarification']);
+
+        $verified = $this->makeReport($this->makeUser('masyarakat'));
+        $verified->update(['status' => 'verified']);
+
+        $this->actingAs($officer)
+            ->get(route('petugas.verifikasi-laporan'))
+            ->assertOk()
+            ->assertSeeText('Verifikasi Laporan 2');
+    }
+
+    public function test_officer_can_record_a_verified_incident_for_the_monitoring_map(): void
+    {
+        $officer = $this->makeUser('petugas_bpbd');
+
+        $this->actingAs($officer)
+            ->post(route('petugas.peta-monitoring.store'), [
+                'title' => 'Genangan di jalan utama',
+                'description' => 'Air menggenangi jalan utama dan mulai menghambat kendaraan warga.',
+                'occurred_at' => now()->subMinutes(30)->format('Y-m-d\TH:i'),
+                'village' => 'Uteunkot',
+                'address' => 'Jalan Pasar',
+                'latitude' => '5.1801000',
+                'longitude' => '97.1500000',
+                'water_level_m' => 0.45,
+                'flow_condition' => 'slow',
+            ])
+            ->assertRedirect(route('petugas.peta-monitoring'))
+            ->assertSessionHas('status');
+
+        $report = FloodReport::firstOrFail();
+        $this->assertSame('verified', $report->status);
+        $this->assertSame($officer->id, $report->verified_by);
+        $this->assertSame(45, $report->water_level_cm);
+        $this->assertDatabaseHas('activity_logs', [
+            'subject_type' => FloodReport::class,
+            'subject_id' => $report->id,
+            'action' => 'recorded_by_officer',
+        ]);
+    }
+
     private function makeUser(string $role): User
     {
         return User::create([

@@ -62,7 +62,8 @@ Route::prefix('petugas')->name('petugas.')
     ->group(function () {
         // Operasional
         Route::get('/', fn () => view('petugas.dashboard'))->name('dashboard');
-        Route::get('/peta-monitoring', fn () => view('petugas.peta-monitoring'))->name('peta-monitoring');
+        Route::get('/peta-monitoring', [FloodReportController::class, 'monitoringMap'])->name('peta-monitoring');
+        Route::post('/peta-monitoring/kejadian', [FloodReportController::class, 'storeStaffIncident'])->name('peta-monitoring.store');
         Route::get('/verifikasi-laporan', [FloodReportController::class, 'verificationQueue'])->name('verifikasi-laporan');
         Route::post('/verifikasi-laporan/{report}', [FloodReportController::class, 'verify'])->name('verifikasi-laporan.update');
         Route::get('/laporan/{report}/foto/{photo}', [FloodReportController::class, 'photo'])->name('laporan-foto');

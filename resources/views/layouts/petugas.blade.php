@@ -39,7 +39,7 @@
                 $op = [
                     ['route'=>'petugas.dashboard',          'label'=>'Dashboard',           'icon'=>'home'],
                     ['route'=>'petugas.peta-monitoring',     'label'=>'Peta Monitoring Banjir','icon'=>'map', 'badge'=>0],
-                    ['route'=>'petugas.verifikasi-laporan',  'label'=>'Verifikasi Laporan',  'icon'=>'check','badge'=>4],
+                    ['route'=>'petugas.verifikasi-laporan',  'label'=>'Verifikasi Laporan',  'icon'=>'check','badge'=>$pendingFloodReportsCount],
                     ['route'=>'petugas.data-kejadian',       'label'=>'Data Kejadian Banjir','icon'=>'list'],
                     ['route'=>'petugas.kondisi-jalan',       'label'=>'Kondisi Jalan',       'icon'=>'road'],
                     ['route'=>'petugas.rute-evakuasi',       'label'=>'Rute Evakuasi',       'icon'=>'route'],

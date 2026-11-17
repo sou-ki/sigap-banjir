@@ -34,6 +34,98 @@ class FloodReportController extends Controller
         return view('lapor-banjir');
     }
 
+    public function monitoringMap()
+    {
+        $reports = FloodReport::query()
+            ->whereIn('status', ['pending', 'needs_clarification', 'verified', 'in_progress', 'resolved'])
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->latest('occurred_at')
+            ->get([
+                'id', 'report_number', 'title', 'village', 'occurred_at',
+                'latitude', 'longitude', 'water_level_cm', 'danger_level', 'status',
+            ]);
+
+        $mapReports = $reports->map(fn (FloodReport $report): array => [
+            'id' => $report->id,
+            'report_number' => $report->report_number,
+            'title' => $report->title,
+            'village' => $report->village,
+            'occurred_at' => $report->occurred_at?->toIso8601String(),
+            'latitude' => (float) $report->latitude,
+            'longitude' => (float) $report->longitude,
+            'water_level_cm' => $report->water_level_cm,
+            'danger_level' => $report->danger_level,
+            'status' => $report->status,
+        ])->values();
+
+        return view('petugas.peta-monitoring', compact('reports', 'mapReports'));
+    }
+
+    public function storeStaffIncident(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'min:8', 'max:150'],
+            'description' => ['required', 'string', 'min:20', 'max:5000'],
+            'occurred_at' => ['required', 'date', 'before_or_equal:now'],
+            'village' => ['required', 'string', 'max:100'],
+            'address' => ['nullable', 'string', 'max:255'],
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'water_level_m' => ['required', 'numeric', 'between:0.01,10'],
+            'flow_condition' => ['required', Rule::in(['stagnant', 'slow', 'fast', 'dangerous'])],
+        ]);
+
+        $waterLevel = (int) round((float) $validated['water_level_m'] * 100);
+        $dangerLevel = match (true) {
+            $waterLevel <= 30 => 'low',
+            $waterLevel <= 60 => 'medium',
+            default => 'high',
+        };
+
+        $report = DB::transaction(function () use ($request, $validated, $waterLevel, $dangerLevel): FloodReport {
+            $report = FloodReport::create([
+                'report_number' => 'TEMP-'.Str::uuid(),
+                'user_id' => $request->user()->id,
+                'reporter_name' => $request->user()->name,
+                'title' => $validated['title'],
+                'description' => $validated['description'],
+                'occurred_at' => $validated['occurred_at'],
+                'village' => $validated['village'],
+                'address' => $validated['address'] ?? null,
+                'latitude' => $validated['latitude'],
+                'longitude' => $validated['longitude'],
+                'water_level_cm' => $waterLevel,
+                'flow_condition' => $validated['flow_condition'],
+                'danger_level' => $dangerLevel,
+                'impacts' => [],
+                'status' => 'verified',
+                'verified_by' => $request->user()->id,
+                'verified_at' => now(),
+            ]);
+
+            $report->report_number = sprintf('LPR-%s-%06d', now()->format('ym'), $report->id);
+            $report->save();
+
+            ActivityLog::create([
+                'user_id' => $request->user()->id,
+                'category' => 'flood_report',
+                'action' => 'recorded_by_officer',
+                'subject_type' => FloodReport::class,
+                'subject_id' => $report->id,
+                'properties' => ['report_number' => $report->report_number],
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ]);
+
+            return $report;
+        });
+
+        return redirect()
+            ->route('petugas.peta-monitoring')
+            ->with('status', "Kejadian {$report->report_number} berhasil dicatat dan ditampilkan di peta.");
+    }
+
     public function store(Request $request)
     {
         $isPublic = $request->routeIs('lapor-banjir.store');

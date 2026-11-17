@@ -78,7 +78,7 @@
                         <ol class="space-y-2">
                             @forelse($report->activityLogs as $log)
                             @php
-                                $activityLabels = ['submitted' => 'Laporan dikirim', 'verified' => 'Laporan diverifikasi', 'needs_clarification' => 'Klarifikasi diminta', 'rejected' => 'Laporan ditolak'];
+                                $activityLabels = ['submitted' => 'Laporan dikirim', 'recorded_by_officer' => 'Dicatat dan diverifikasi petugas', 'verified' => 'Laporan diverifikasi', 'needs_clarification' => 'Klarifikasi diminta', 'rejected' => 'Laporan ditolak'];
                             @endphp
                             <li class="text-xs text-gray-600">
                                 <span class="font-semibold">{{ $activityLabels[$log->action] ?? $log->action }}</span>
