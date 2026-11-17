@@ -36,7 +36,7 @@ class FloodReportController extends Controller
 
     public function store(Request $request)
     {
-        $isPublic = $request->user() === null;
+        $isPublic = $request->routeIs('lapor-banjir.store');
         $validated = $request->validate([
             'title' => [$isPublic ? 'nullable' : 'required', 'string', 'min:8', 'max:150'],
             'description' => ['required', 'string', 'min:20', 'max:5000'],
@@ -90,11 +90,13 @@ class FloodReportController extends Controller
             ->when($request->hasFile('photo'), fn ($files) => $files->push(['file' => $request->file('photo'), 'type' => 'photo']))
             ->when($request->hasFile('video'), fn ($files) => $files->push(['file' => $request->file('video'), 'type' => 'video']));
 
-        $report = DB::transaction(function () use ($request, $validated, $waterLevel, $dangerLevel, $media): FloodReport {
+        $report = DB::transaction(function () use ($request, $validated, $waterLevel, $dangerLevel, $media, $isPublic): FloodReport {
             $report = FloodReport::create([
                 'report_number' => 'TEMP-'.Str::uuid(),
                 'user_id' => $request->user()?->id,
-                'reporter_name' => $request->user()?->name ?? ($validated['reporter_name'] ?? null),
+                'reporter_name' => $isPublic
+                    ? (($validated['reporter_name'] ?? null) ?: $request->user()?->name)
+                    : ($request->user()?->name ?? ($validated['reporter_name'] ?? null)),
                 'contact_phone' => isset($validated['contact_phone'])
                     ? IndonesianPhoneNumber::normalize($validated['contact_phone'])
                     : ($request->user()?->phone ? IndonesianPhoneNumber::normalize($request->user()->phone) : null),

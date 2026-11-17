@@ -69,6 +69,42 @@ class PublicCitizenSubmissionTest extends TestCase
             ->assertSee('Menunggu verifikasi petugas');
     }
 
+    public function test_authenticated_user_can_submit_the_public_flood_form(): void
+    {
+        Storage::fake('local');
+        $user = User::create([
+            'name' => 'Warga Login',
+            'email' => 'warga-login@example.test',
+            'password' => 'password123',
+            'role' => 'masyarakat',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('lapor-banjir.store'), [
+                'description' => 'Air mulai memasuki jalan dan halaman rumah warga sekitar pasar.',
+                'occurred_at' => now()->subHour()->format('Y-m-d\TH:i'),
+                'village' => 'Uteunkot',
+                'latitude' => '5.1801000',
+                'longitude' => '97.1500000',
+                'water_level_m' => 0.8,
+                'flow_condition' => 'fast',
+                'reporter_name' => 'Nama Pelapor',
+                'contact_phone' => '081234567890',
+                'agreement' => '1',
+                'photo' => UploadedFile::fake()->image('flood.jpg'),
+                'video' => UploadedFile::fake()->create('flood.mp4', 100, 'video/mp4'),
+            ])
+            ->assertRedirect(route('status-warga'))
+            ->assertSessionHas('submitted_reference');
+
+        $report = FloodReport::with('photos')->firstOrFail();
+        $this->assertSame($user->id, $report->user_id);
+        $this->assertSame('Nama Pelapor', $report->reporter_name);
+        $this->assertSame(80, $report->water_level_cm);
+        $this->assertSame(['photo', 'video'], $report->photos->pluck('media_type')->sort()->values()->all());
+    }
+
     public function test_guest_can_submit_an_evacuation_request_and_track_it(): void
     {
         $this->get(route('permintaan-evakuasi'))
