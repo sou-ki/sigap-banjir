@@ -21,14 +21,14 @@ $paths = [
 $stroke = ['map','route'];
 @endphp
 @if(in_array($icon, $stroke))
-<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+<svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 opacity-80" style="width:15px;height:15px;min-width:15px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
     @if($icon==='map')<path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>@endif
     @if($icon==='route')<path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>@endif
 </svg>
 @elseif($icon==='road')
-<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+<svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 opacity-80" style="width:15px;height:15px;min-width:15px" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
     <path stroke-linecap="round" stroke-linejoin="round" d="M9 20h6M9 4h6m-5 4h4m-5 4h4m-3 4h2"/>
 </svg>
 @else
-<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">{!! $paths[$icon] ?? $paths['home'] !!}</svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 opacity-80" style="width:15px;height:15px;min-width:15px" viewBox="0 0 24 24" fill="currentColor">{!! $paths[$icon] ?? $paths['home'] !!}</svg>
 @endif

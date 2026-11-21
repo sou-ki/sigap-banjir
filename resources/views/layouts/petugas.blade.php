@@ -15,6 +15,10 @@
 
     {{-- ===== SIDEBAR ===== --}}
     <aside class="flex flex-col w-56 flex-shrink-0 overflow-y-auto" style="background:#0f1f3d">
+        <style>
+            aside a { color: rgba(255,255,255,0.75); }
+            aside a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+        </style>
 
         {{-- Logo --}}
         <div class="flex items-center gap-2.5 px-4 py-3.5 border-b border-white/10">
@@ -36,11 +40,11 @@
         </div>
 
         {{-- Nav groups --}}
-        <nav class="flex-1 px-2 py-3 overflow-y-auto space-y-4">
+        <nav class="flex-1 px-2 py-2 overflow-y-auto space-y-3">
 
             {{-- Operasional --}}
             <div>
-                <p class="text-xs font-bold text-blue-400/60 uppercase tracking-widest px-2 mb-1.5">Operasional</p>
+                <p class="text-xs font-bold text-blue-400/50 uppercase tracking-widest px-2 mb-1 mt-1">Operasional</p>
                 @php
                 $op = [
                     ['route'=>'petugas.dashboard',          'label'=>'Dashboard',           'icon'=>'home'],
@@ -56,12 +60,12 @@
                 @foreach($op as $item)
                 @php $active = request()->routeIs($item['route']); @endphp
                 <a href="{{ route($item['route']) }}"
-                   class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all mb-0.5
-                          {{ $active ? 'bg-blue-600/30 text-white border-l-2 border-blue-400 pl-2.5' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                   class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all mb-0.5
+                          {{ $active ? 'bg-blue-600/25 text-white border-l-2 border-blue-400' : 'hover:text-white' }}">
                     @include('layouts._petugas_icon', ['icon'=>$item['icon']])
                     <span class="truncate flex-1">{{ $item['label'] }}</span>
                     @if(!empty($item['badge']) && $item['badge'] > 0)
-                    <span class="ml-auto min-w-[18px] h-[18px] bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold px-1">{{ $item['badge'] }}</span>
+                    <span class="ml-auto min-w-[16px] h-[16px] bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold px-1 flex-shrink-0">{{ $item['badge'] }}</span>
                     @endif
                 </a>
                 @endforeach
@@ -69,7 +73,7 @@
 
             {{-- Logistik --}}
             <div>
-                <p class="text-xs font-bold text-blue-400/60 uppercase tracking-widest px-2 mb-1.5">Logistik</p>
+                <p class="text-xs font-bold text-blue-400/50 uppercase tracking-widest px-2 mb-1">Logistik</p>
                 @php
                 $log = [
                     ['route'=>'petugas.dashboard-logistik', 'label'=>'Dashboard Logistik', 'icon'=>'box'],
@@ -84,8 +88,8 @@
                 @foreach($log as $item)
                 @php $active = request()->routeIs($item['route']); @endphp
                 <a href="{{ route($item['route']) }}"
-                   class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all mb-0.5
-                          {{ $active ? 'bg-blue-600/30 text-white border-l-2 border-blue-400 pl-2.5' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                   class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all mb-0.5
+                          {{ $active ? 'bg-blue-600/25 text-white border-l-2 border-blue-400' : 'hover:text-white' }}">
                     @include('layouts._petugas_icon', ['icon'=>$item['icon']])
                     <span class="truncate flex-1">{{ $item['label'] }}</span>
                 </a>
@@ -94,7 +98,7 @@
 
             {{-- Lainnya --}}
             <div>
-                <p class="text-xs font-bold text-blue-400/60 uppercase tracking-widest px-2 mb-1.5">Lainnya</p>
+                <p class="text-xs font-bold text-blue-400/50 uppercase tracking-widest px-2 mb-1">Lainnya</p>
                 @php
                 $lap = [
                     ['route'=>'petugas.statistik', 'label'=>'Statistik & Riwayat', 'icon'=>'chart'],
@@ -104,8 +108,8 @@
                 @foreach($lap as $item)
                 @php $active = request()->routeIs($item['route']); @endphp
                 <a href="{{ route($item['route']) }}"
-                   class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all mb-0.5
-                          {{ $active ? 'bg-blue-600/30 text-white border-l-2 border-blue-400 pl-2.5' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
+                   class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all mb-0.5
+                          {{ $active ? 'bg-blue-600/25 text-white border-l-2 border-blue-400' : 'hover:text-white' }}">
                     @include('layouts._petugas_icon', ['icon'=>$item['icon']])
                     <span class="truncate">{{ $item['label'] }}</span>
                 </a>
@@ -114,11 +118,11 @@
         </nav>
 
         {{-- Keluar --}}
-        <div class="px-2 py-3 border-t border-white/10">
+        <div class="px-2 py-3 border-t border-white/10 flex-shrink-0">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-red-300 hover:bg-red-500/20 hover:text-red-200 transition-colors w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                <button type="submit" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-300 hover:bg-red-500/20 hover:text-red-200 transition-colors w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 opacity-80" style="width:15px;height:15px;min-width:15px" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                     Keluar
                 </button>
             </form>

@@ -35,7 +35,7 @@
         </div>
 
         {{-- Nav --}}
-        <nav class="flex-1 px-2 py-3 space-y-0.5">
+        <nav class="flex-1 px-2 py-2 space-y-0.5">
             @php
             $nav = [
                 ['route'=>'admin.dashboard',           'label'=>'Dashboard',           'icon'=>'home'],
@@ -57,9 +57,9 @@
             @foreach($nav as $item)
             @php $active = request()->routeIs($item['route']); @endphp
             <a href="{{ route($item['route']) }}"
-               class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all
-                      {{ $active ? 'bg-blue-600/30 text-white border-l-2 border-blue-400' : 'text-blue-200 hover:bg-white/10 hover:text-white' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">{!! $icons[$item['icon']] !!}</svg>
+               class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all mb-0.5
+                      {{ $active ? 'bg-blue-600/25 text-white border-l-2 border-blue-400' : 'hover:text-white' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 opacity-80" style="width:15px;height:15px;min-width:15px" viewBox="0 0 24 24" fill="currentColor">{!! $icons[$item['icon']] !!}</svg>
                 <span class="truncate">{{ $item['label'] }}</span>
             </a>
             @endforeach
@@ -69,8 +69,8 @@
         <div class="px-2 py-3 border-t border-white/10">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-red-300 hover:bg-red-500/20 hover:text-red-200 transition-colors w-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                <button type="submit" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-300 hover:bg-red-500/20 hover:text-red-200 transition-colors w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="flex-shrink-0 opacity-80" style="width:15px;height:15px;min-width:15px" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
                     Keluar
                 </button>
             </form>
