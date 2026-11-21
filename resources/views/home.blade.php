@@ -234,7 +234,7 @@
                 <div class="flex-shrink-0 max-w-xs">
                     <p class="text-xs font-bold uppercase tracking-widest text-blue-600 mb-3">CARA MELAPORKAN BANJIR</p>
                     <h2 class="text-2xl lg:text-3xl font-extrabold text-gray-900 mb-3">
-                        Empat langkah, kurang dari tiga menit
+                        Tiga langkah, tanpa perlu akun
                     </h2>
                     <p class="text-sm text-gray-500 mb-6 leading-relaxed">
                         Laporan Anda akan diverifikasi petugas sebelum tampil sebagai informasi terkonfirmasi di peta.
@@ -251,45 +251,45 @@
                     <div class="flex gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-900 text-sm">1. Masuk atau daftar</h4>
-                            <p class="text-sm text-gray-500 mt-1">Buat akun warga gratis untuk mengirim laporan.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                             </svg>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-gray-900 text-sm">2. Tandai lokasi</h4>
-                            <p class="text-sm text-gray-500 mt-1">Klik peta atau gunakan lokasi Anda saat ini.</p>
+                            <h4 class="font-semibold text-gray-900 text-sm">1. Tandai lokasi</h4>
+                            <p class="text-sm text-gray-500 mt-1">Gunakan GPS otomatis atau klik titik di peta.</p>
                         </div>
                     </div>
                     <div class="flex gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-1 9H8v-2h4v2zm2-4H8v-2h6v2zm0-4H8V8h6v2z"/>
                             </svg>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-gray-900 text-sm">3. Isi detail &amp; foto</h4>
-                            <p class="text-sm text-gray-500 mt-1">Tulis kondisi, ketinggian air, dan unggah foto.</p>
+                            <h4 class="font-semibold text-gray-900 text-sm">2. Isi detail &amp; unggah media</h4>
+                            <p class="text-sm text-gray-500 mt-1">Tulis kondisi, ketinggian air, foto, dan video.</p>
                         </div>
                     </div>
                     <div class="flex gap-4">
                         <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
                             </svg>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-gray-900 text-sm">4. Pantau verifikasi</h4>
-                            <p class="text-sm text-gray-500 mt-1">Lacak status laporan hingga ditangani petugas.</p>
+                            <h4 class="font-semibold text-gray-900 text-sm">3. Pantau verifikasi</h4>
+                            <p class="text-sm text-gray-500 mt-1">Lacak status dengan nomor referensi dan nomor HP.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-gray-500 text-sm">Tanpa akun diperlukan</h4>
+                            <p class="text-sm text-gray-400 mt-1">Siapa pun bisa melaporkan langsung tanpa daftar.</p>
                         </div>
                     </div>
                 </div>

@@ -87,7 +87,7 @@
     {{-- Register link --}}
     <p class="text-center text-sm text-gray-500">
         Belum punya akun?
-        <a href="{{ route('daftar') }}" class="font-semibold text-blue-600 hover:text-blue-800">Daftar sebagai warga</a>
+        <a href="{{ route('daftar') }}" class="font-semibold text-blue-600 hover:text-blue-800">Daftar Akun</a>
     </p>
 </form>
 
@@ -97,17 +97,22 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
         </svg>
-        <p class="text-xs font-bold text-blue-800 uppercase tracking-wide">PEMILIH PERAN PROTOTIPE</p>
+        <p class="text-xs font-bold text-blue-800 uppercase tracking-wide">AKUN DEMO PROTOTIPE</p>
     </div>
-    <p class="text-xs text-blue-600 mb-3">Masuk cepat untuk demonstrasi. Akun demo memakai kata sandi <strong>sigap123</strong></p>
-    <div class="grid grid-cols-2 gap-2">
-        @foreach(['Masyarakat', 'Petugas BPBD', 'Koordinator Relawan', 'Admin Sistem'] as $role)
-        <button onclick="quickLogin('{{ Str::slug($role) }}@demo.sigap')"
-                class="flex items-center gap-2 text-xs font-medium text-blue-700 bg-white border border-blue-200 rounded-lg px-3 py-2.5 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+    <p class="text-xs text-blue-600 mb-3">Klik untuk mengisi kredensial secara otomatis, lalu tekan <strong>Masuk</strong>.</p>
+    <div class="grid grid-cols-1 gap-2">
+        @foreach([
+            ['Petugas BPBD',           'petugas@sigapbanjir.demo',       'petugas123'],
+            ['Koordinator Relawan',    'koordinator@sigapbanjir.demo',   'koordinator123'],
+            ['Admin Sistem',           'admin@sigapbanjir.demo',         'admin123'],
+        ] as [$label, $email, $pass])
+        <button type="button" onclick="quickFill('{{ $email }}','{{ $pass }}')"
+                class="flex items-center gap-2.5 text-xs font-medium text-blue-700 bg-white border border-blue-200 rounded-lg px-3 py-2.5 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors text-left">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
             </svg>
-            {{ $role }}
+            <span>{{ $label }}</span>
+            <span class="ml-auto text-blue-400 font-normal">{{ $email }}</span>
         </button>
         @endforeach
     </div>
@@ -122,19 +127,10 @@ function togglePassword() {
     f.type = f.type === 'password' ? 'text' : 'password';
 }
 
-function quickLogin(email) {
-    // Map role ke email dan sandi yang benar
-    const accounts = {
-        'masyarakat@demo.sigap':          { email: 'warga@sigapbanjir.demo',         pass: 'sigap123' },
-        'petugas-bpbd@demo.sigap':        { email: 'petugas@sigapbanjir.demo',       pass: 'petugas123' },
-        'koordinator-relawan@demo.sigap': { email: 'koordinator@sigapbanjir.demo',   pass: 'koordinator123' },
-        'admin-sistem@demo.sigap':        { email: 'admin@sigapbanjir.demo',         pass: 'admin123' },
-    };
-    const acc = accounts[email];
-    if (acc) {
-        document.querySelector('input[name=email]').value = acc.email;
-        document.querySelector('input[name=password]').value = acc.pass;
-    }
+function quickFill(email, pass) {
+    document.querySelector('input[name=email]').value = email;
+    document.querySelector('input[name=password]').value = pass;
+    document.querySelector('input[name=email]').focus();
 }
 </script>
 @endpush

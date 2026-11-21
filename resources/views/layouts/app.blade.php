@@ -29,8 +29,16 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
-                <a href="{{ route('home') }}" class="flex items-center flex-shrink-0">
-                    <img src="{{ asset('logo.png') }}" alt="SIGAP Banjir" class="h-10 w-auto">
+                <a href="{{ route('home') }}" class="flex items-center gap-2 flex-shrink-0">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                    </div>
+                    <div class="leading-tight">
+                        <p class="text-sm font-extrabold text-gray-900 leading-none">SIGAP</p>
+                        <p class="text-xs font-bold text-blue-600 leading-none">BANJIR</p>
+                    </div>
                 </a>
 
                 <!-- Desktop Nav Links -->
@@ -45,8 +53,14 @@
 
                 <!-- Right side buttons -->
                 <div class="hidden md:flex items-center gap-3">
+                    @auth
+                    <a href="{{ auth()->user()->dashboardRoute() }}" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors flex items-center gap-1.5">
+                        <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">{{ auth()->user()->initials() }}</div>
+                        {{ auth()->user()->name }}
+                    </a>
+                    @else
                     <a href="{{ route('masuk') }}" class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">Masuk</a>
-                    <a href="{{ route('daftar') }}" class="px-4 py-2 text-sm font-medium text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">Daftar</a>
+                    @endauth
                     <a href="{{ route('lapor-banjir') }}" class="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg flex items-center gap-2 transition-colors shadow-sm">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z"/>
@@ -77,7 +91,11 @@
                 <a href="{{ route('permintaan-evakuasi') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Permintaan Evakuasi</a>
                 <a href="{{ route('status-warga') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Cek Status Laporan</a>
                 <div class="pt-2 border-t border-gray-100 flex flex-col gap-2">
+                    @auth
+                    <a href="{{ auth()->user()->dashboardRoute() }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Dashboard</a>
+                    @else
                     <a href="{{ route('masuk') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md">Masuk</a>
+                    @endauth
                     <a href="{{ route('lapor-banjir') }}" class="px-3 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg flex items-center gap-2 justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z"/>
@@ -101,7 +119,15 @@
                 <!-- Brand -->
                 <div class="col-span-1">
                     <div class="flex items-center gap-2 mb-4">
-                        <img src="{{ asset('logo.png') }}" alt="SIGAP Banjir" class="h-10 w-auto brightness-0 invert">
+                        <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                            </svg>
+                        </div>
+                        <div class="leading-tight">
+                            <p class="text-sm font-extrabold text-white leading-none">SIGAP</p>
+                            <p class="text-xs font-bold text-blue-300 leading-none">BANJIR</p>
+                        </div>
                     </div>
                     <p class="text-sm text-gray-400 leading-relaxed">
                         Sistem Informasi Geografis dan Koordinasi Respons Banjir Kota Lhokseumawe. Prototipe Web GIS berbasis partisipasi masyarakat (crowdsourcing).

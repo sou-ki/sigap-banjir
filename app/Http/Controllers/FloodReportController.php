@@ -249,8 +249,9 @@ class FloodReportController extends Controller
                 ->with('submission_type', 'flood_report');
         }
 
-        return redirect()->route('dashboard.laporan-saya')
-            ->with('status', "Laporan {$report->report_number} berhasil dikirim dan menunggu verifikasi petugas.");
+        return redirect()->route('status-warga')
+            ->with('submitted_reference', $report->report_number)
+            ->with('submission_type', 'flood_report');
     }
 
     public function mine(Request $request)

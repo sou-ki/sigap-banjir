@@ -13,19 +13,25 @@
 <div class="flex h-screen overflow-hidden">
 
     {{-- ===== SIDEBAR ===== --}}
-    <aside class="flex flex-col w-48 flex-shrink-0 overflow-y-auto" style="background:#0f1f3d">
+    <aside class="flex flex-col w-52 flex-shrink-0 overflow-y-auto" style="background:#0f1f3d">
 
         {{-- Logo --}}
-        <div class="flex items-center px-4 py-3 border-b border-white/10">
-            <a href="{{ route('admin.dashboard') }}">
-                <img src="{{ asset('logo.png') }}" alt="SIGAP Banjir" class="h-10 w-auto brightness-0 invert">
-            </a>
+        <div class="flex items-center gap-2.5 px-4 py-3.5 border-b border-white/10">
+            <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+            </div>
+            <div class="leading-tight">
+                <p class="text-sm font-extrabold text-white leading-none">SIGAP</p>
+                <p class="text-xs font-bold text-blue-300 leading-none">BANJIR</p>
+            </div>
         </div>
 
         {{-- User info --}}
         <div class="px-4 py-3 border-b border-white/10">
             <p class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-0.5">Admin Sistem</p>
-            <p class="text-sm font-semibold text-white truncate">Rizal Hakim</p>
+            <p class="text-sm font-semibold text-white truncate">{{ auth()->user()->name }}</p>
         </div>
 
         {{-- Nav --}}
@@ -61,10 +67,13 @@
 
         {{-- Keluar --}}
         <div class="px-2 py-3 border-t border-white/10">
-            <a href="{{ route('home') }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-red-300 hover:bg-red-500/20 hover:text-red-200 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-                Keluar
-            </a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-red-300 hover:bg-red-500/20 hover:text-red-200 transition-colors w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    Keluar
+                </button>
+            </form>
         </div>
     </aside>
 
@@ -75,15 +84,14 @@
         <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
             <div>
                 <h1 class="text-base font-bold text-gray-900">@yield('title', 'Dashboard')</h1>
-                <p class="text-xs text-gray-500 mt-0.5">
-                    Kota Lhokseumawe, Aceh
-                </p>
+                <p class="text-xs text-gray-500 mt-0.5">Kota Lhokseumawe, Aceh</p>
             </div>
-            <div class="flex items-center gap-3">
-                <button class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                </button>
-                <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white text-xs font-bold">RH</div>
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center text-white text-xs font-bold">{{ auth()->user()->initials() }}</div>
+                <div class="text-right hidden sm:block">
+                    <p class="text-xs font-semibold text-gray-900 leading-none">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Admin Sistem</p>
+                </div>
             </div>
         </header>
 

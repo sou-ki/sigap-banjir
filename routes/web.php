@@ -40,22 +40,6 @@ Route::post('/reset-sandi', [AuthController::class, 'resetPassword'])
     ->middleware('throttle:6,1')
     ->name('password.update');
 
-// ── Dashboard Masyarakat ──────────────────────────────────────────────────────
-Route::prefix('dashboard')->name('dashboard.')
-    ->middleware(['auth', 'active', 'role:masyarakat'])
-    ->group(function () {
-        Route::get('/', fn () => view('dashboard.beranda'))->name('beranda');
-        Route::get('/peta-banjir', fn () => view('dashboard.peta-banjir'))->name('peta-banjir');
-        Route::get('/laporkan-banjir', [FloodReportController::class, 'create'])->name('laporan-banjir');
-        Route::post('/laporkan-banjir', [FloodReportController::class, 'store'])->name('laporan-banjir.store');
-        Route::get('/laporan-saya', [FloodReportController::class, 'mine'])->name('laporan-saya');
-        Route::get('/rute-evakuasi', fn () => view('dashboard.rute-evakuasi'))->name('rute-evakuasi');
-        Route::get('/lokasi-pengungsian', fn () => view('dashboard.lokasi-pengungsian'))->name('lokasi-pengungsian');
-        Route::get('/permintaan-evakuasi', [PublicCitizenController::class, 'evacuationForm'])->name('permintaan-evakuasi');
-        Route::get('/notifikasi', fn () => view('dashboard.notifikasi'))->name('notifikasi');
-        Route::get('/profil', fn () => view('dashboard.profil'))->name('profil');
-    });
-
 // ── Dashboard Petugas BPBD ────────────────────────────────────────────────────
 Route::prefix('petugas')->name('petugas.')
     ->middleware(['auth', 'active', 'role:petugas_bpbd'])
@@ -94,7 +78,6 @@ Route::prefix('koordinator')->name('koordinator.')
         Route::get('/', fn () => view('koordinator.dashboard'))->name('dashboard');
         Route::get('/kebutuhan-relawan', fn () => view('koordinator.kebutuhan-relawan'))->name('kebutuhan-relawan');
         Route::get('/data-relawan', fn () => view('koordinator.data-relawan'))->name('data-relawan');
-        Route::get('/ketersediaan-relawan', fn () => view('koordinator.ketersediaan-relawan'))->name('ketersediaan-relawan');
         Route::get('/alokasi-relawan', fn () => view('koordinator.alokasi-relawan'))->name('alokasi-relawan');
         Route::get('/penugasan-aktif', fn () => view('koordinator.penugasan-aktif'))->name('penugasan-aktif');
         Route::get('/riwayat-penugasan', fn () => view('koordinator.riwayat-penugasan'))->name('riwayat-penugasan');

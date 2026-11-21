@@ -27,7 +27,7 @@ class AuthFlowTest extends TestCase
 
         $user = User::where('email', 'warga-uji@example.test')->firstOrFail();
 
-        $response->assertRedirect(route('dashboard.beranda'));
+        $response->assertRedirect(route('home'));
         $this->assertAuthenticatedAs($user);
         $this->assertSame('masyarakat', $user->role);
         $this->assertTrue($user->is_active);
@@ -48,7 +48,7 @@ class AuthFlowTest extends TestCase
             'email' => $user->email,
             'password' => 'strong-password-123',
         ])
-            ->assertRedirect(route('dashboard.beranda'));
+            ->assertRedirect(route('home'));
 
         $this->assertAuthenticatedAs($user);
     }

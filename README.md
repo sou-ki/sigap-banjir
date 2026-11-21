@@ -78,9 +78,11 @@ Setelah menarik perubahan yang menambahkan kolom informasi pelapor laporan banji
 ## Alur Login → Dashboard
 
 ```
-Admin Sistem       → /admin
-Petugas BPBD       → /petugas
-Koordinator Relawan→ /petugas  (layout sama dengan Petugas)
-Masyarakat         → /dashboard
+Admin Sistem        → /admin
+Petugas BPBD        → /petugas
+Koordinator Relawan → /koordinator
+Masyarakat          → / (beranda publik)
 ```
+
+> Masyarakat tidak memiliki dashboard khusus. Setelah login, mereka diarahkan ke halaman beranda. Pelaporan banjir dan permintaan evakuasi tersedia tanpa akun di `/lapor-banjir` dan `/permintaan-evakuasi`.
 

@@ -34,14 +34,27 @@
             @csrf
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <h2 class="text-base font-bold text-gray-900 mb-1 flex items-center gap-2"><span class="w-6 h-6 bg-blue-600 text-white rounded-full text-xs flex items-center justify-center">1</span>Lokasi Kejadian</h2>
-                <p class="text-sm text-gray-500 ml-8 mb-4">Klik peta untuk memilih titik kejadian atau gunakan lokasi perangkat. Penanda peta menunjukkan lokasi yang akan dikirim.</p>
-                <button type="button" id="locate-me" class="mb-3 rounded-lg border border-blue-200 px-3 py-2.5 text-sm font-medium text-blue-700 hover:bg-blue-50">Gunakan lokasi saya</button>
+                <p class="text-sm text-gray-500 ml-8 mb-4">Gunakan tombol di bawah untuk mendeteksi lokasi otomatis, atau klik langsung pada peta.</p>
+
+                {{-- Locate button --}}
+                <button type="button" id="locate-me"
+                    class="mb-4 w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border-2 border-blue-500 bg-blue-50 hover:bg-blue-100 px-4 py-3 text-sm font-semibold text-blue-700 transition-all">
+                    <svg id="locate-icon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                    </svg>
+                    <svg id="locate-spinner" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0 hidden animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48 2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48 2.83-2.83"/>
+                    </svg>
+                    <span id="locate-label">Gunakan Lokasi Saya Sekarang</span>
+                </button>
+
+                {{-- GPS status banner --}}
+                <div id="gps-banner" class="hidden mb-4 rounded-xl px-4 py-3 text-sm font-medium flex items-center gap-2" aria-live="polite"></div>
+
                 <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude') }}">
                 <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude') }}">
-                <div id="report-map" class="mb-4 border border-gray-200"></div>
-                <p id="location-status" class="text-xs text-gray-500 mb-3" aria-live="polite">
-                    {{ old('latitude') && old('longitude') ? 'Lokasi sebelumnya dipilih. Klik peta atau gunakan lokasi perangkat untuk mengubah.' : 'Lokasi belum dipilih. Klik peta atau gunakan lokasi perangkat.' }}
-                </p>
+                <div id="report-map" class="mb-3 border border-gray-200"></div>
+                <p class="text-xs text-gray-400 mb-4">Penanda bisa digeser untuk menyesuaikan titik kejadian yang tepat.</p>
                 @error('latitude')<p class="text-sm text-red-600 mb-1">{{ $message }}</p>@enderror
                 @error('longitude')<p class="text-sm text-red-600 mb-2">{{ $message }}</p>@enderror
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -154,44 +167,176 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const map = L.map('report-map').setView([5.1801, 97.1500], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '© OpenStreetMap contributors' }).addTo(map);
-    const latitude = document.getElementById('latitude');
-    const longitude = document.getElementById('longitude');
-    const locationStatus = document.getElementById('location-status');
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    const latInput   = document.getElementById('latitude');
+    const lngInput   = document.getElementById('longitude');
+    const btn        = document.getElementById('locate-me');
+    const btnLabel   = document.getElementById('locate-label');
+    const icon       = document.getElementById('locate-icon');
+    const spinner    = document.getElementById('locate-spinner');
+    const banner     = document.getElementById('gps-banner');
     let marker = null;
 
-    function setLocation(point, updateMap) {
-        latitude.value = point.lat.toFixed(7);
-        longitude.value = point.lng.toFixed(7);
-        locationStatus.textContent = 'Titik dipilih: ' + latitude.value + ', ' + longitude.value;
-        if (marker) marker.setLatLng(point);
-        else {
-            marker = L.marker(point, { draggable: true }).addTo(map);
-            marker.on('dragend', function (event) { setLocation(event.target.getLatLng(), true); });
+    // ── helpers ──────────────────────────────────────────────────────────────
+
+    function setMarker(latlng) {
+        latInput.value = latlng.lat.toFixed(7);
+        lngInput.value = latlng.lng.toFixed(7);
+        if (marker) {
+            marker.setLatLng(latlng);
+        } else {
+            marker = L.marker(latlng, { draggable: true }).addTo(map);
+            marker.on('dragend', function (e) {
+                const p = e.target.getLatLng();
+                latInput.value = p.lat.toFixed(7);
+                lngInput.value = p.lng.toFixed(7);
+                showBanner('info', 'Penanda digeser. Mengisi alamat otomatis…');
+                reverseGeocode(p);
+            });
         }
-        if (updateMap) map.setView(point, Math.max(map.getZoom(), 15));
     }
 
-    map.on('click', function (event) { setLocation(event.latlng, false); });
-    if (latitude.value && longitude.value) {
-        const point = L.latLng(Number(latitude.value), Number(longitude.value));
-        marker = L.marker(point, { draggable: true }).addTo(map);
-        marker.on('dragend', function (event) { setLocation(event.target.getLatLng(), true); });
-        map.setView(point, 15);
+    function showBanner(type, msg) {
+        const styles = {
+            loading : 'bg-blue-50 border border-blue-200 text-blue-800',
+            success : 'bg-green-50 border border-green-200 text-green-800',
+            error   : 'bg-red-50 border border-red-200 text-red-800',
+            info    : 'bg-gray-50 border border-gray-200 text-gray-700',
+        };
+        banner.className = 'mb-4 rounded-xl px-4 py-3 text-sm font-medium flex items-center gap-2 ' + (styles[type] || styles.info);
+        banner.textContent = msg;
+        banner.classList.remove('hidden');
     }
 
-    document.getElementById('locate-me').addEventListener('click', function () {
+    function setBtnState(state) {
+        if (state === 'loading') {
+            icon.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            btnLabel.textContent = 'Mendeteksi lokasi…';
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+        } else if (state === 'success') {
+            icon.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            btnLabel.textContent = 'Lokasi Terdeteksi ✓';
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+            btn.classList.replace('border-blue-500', 'border-green-500');
+            btn.classList.replace('bg-blue-50', 'bg-green-50');
+            btn.classList.replace('text-blue-700', 'text-green-700');
+        } else {
+            icon.classList.remove('hidden');
+            spinner.classList.add('hidden');
+            btnLabel.textContent = 'Coba Lagi';
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+        }
+    }
+
+    // ── reverse geocoding (Nominatim) ────────────────────────────────────────
+
+    function reverseGeocode(latlng) {
+        const url = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat='
+            + latlng.lat + '&lon=' + latlng.lng + '&addressdetails=1&accept-language=id';
+
+        fetch(url, { headers: { 'Accept-Language': 'id' } })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data || !data.address) return;
+                const a = data.address;
+
+                // ── Kelurahan / Gampong ──────────────────────────────────────
+                // Coba dari yang paling spesifik ke paling umum
+                const village = a.village || a.suburb || a.neighbourhood
+                    || a.quarter || a.town || a.city_district || '';
+
+                // ── Nama Jalan / Patokan ─────────────────────────────────────
+                const roadParts = [];
+                if (a.road)        roadParts.push(a.road);
+                if (a.house_number) roadParts.push('No. ' + a.house_number);
+                const road = roadParts.join(' ');
+
+                const villageInput  = document.getElementById('village');
+                const addressInput  = document.getElementById('address');
+
+                // Isi hanya jika field masih kosong (tidak timpa isian manual)
+                if (village && !villageInput.value.trim()) {
+                    villageInput.value = village;
+                    villageInput.classList.add('ring-2', 'ring-green-400');
+                    setTimeout(function () { villageInput.classList.remove('ring-2', 'ring-green-400'); }, 2000);
+                }
+                if (road && !addressInput.value.trim()) {
+                    addressInput.value = road;
+                    addressInput.classList.add('ring-2', 'ring-green-400');
+                    setTimeout(function () { addressInput.classList.remove('ring-2', 'ring-green-400'); }, 2000);
+                }
+            })
+            .catch(function () { /* geocoding gagal — biarkan saja, bukan error kritis */ });
+    }
+
+    // ── geolocation ──────────────────────────────────────────────────────────
+
+    function requestLocation() {
         if (!navigator.geolocation) {
-            locationStatus.textContent = 'Pelacakan lokasi tidak tersedia. Pilih titik kejadian dengan klik pada peta.';
+            showBanner('error', 'Browser ini tidak mendukung GPS. Silakan klik peta untuk memilih lokasi.');
             return;
         }
-        locationStatus.textContent = 'Mencari lokasi perangkat...';
-        navigator.geolocation.getCurrentPosition(function (position) {
-            setLocation(L.latLng(position.coords.latitude, position.coords.longitude), true);
-        }, function () {
-            locationStatus.textContent = 'Lokasi tidak dapat diakses. Izinkan akses lokasi atau pilih titik dengan klik pada peta.';
-        }, { enableHighAccuracy: true, timeout: 10000 });
+
+        setBtnState('loading');
+        showBanner('loading', 'Sedang mendeteksi lokasi perangkat Anda…');
+
+        navigator.geolocation.getCurrentPosition(
+            function (pos) {
+                const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+                setMarker(latlng);
+                map.setView(latlng, 17);
+
+                const acc = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
+                const accText = acc ? ' (akurasi ±' + acc + ' m)' : '';
+                showBanner('success', 'Lokasi terdeteksi' + accText + '. Mengisi alamat otomatis…');
+                setBtnState('success');
+
+                reverseGeocode(latlng);
+            },
+            function (err) {
+                const msg = {
+                    1: 'Izin lokasi ditolak. Izinkan akses lokasi di pengaturan browser, lalu coba lagi.',
+                    2: 'Lokasi tidak dapat ditentukan. Pastikan GPS aktif dan coba lagi.',
+                    3: 'Waktu deteksi habis. Pastikan sinyal GPS tersedia dan coba lagi.',
+                }[err.code] || 'Lokasi tidak dapat diakses. Silakan klik peta untuk memilih titik.';
+                showBanner('error', msg);
+                setBtnState('error');
+            },
+            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
+    }
+
+    // ── event listeners ──────────────────────────────────────────────────────
+
+    btn.addEventListener('click', requestLocation);
+
+    map.on('click', function (e) {
+        setMarker(e.latlng);
+        showBanner('info', 'Titik dipilih. Mengisi alamat otomatis…');
+        reverseGeocode(e.latlng);
     });
+
+    // restore old value after validation failure
+    if (latInput.value && lngInput.value) {
+        const p = L.latLng(Number(latInput.value), Number(lngInput.value));
+        setMarker(p);
+        map.setView(p, 16);
+        showBanner('info', 'Lokasi sebelumnya dipulihkan. Klik atau geser penanda untuk mengubah.');
+    } else {
+        // auto-request on page load
+        requestLocation();
+    }
+
+    // ── water level danger indicator ─────────────────────────────────────────
 
     const waterLevel = document.getElementById('water_level_m');
     waterLevel.addEventListener('input', function () {
@@ -200,11 +345,14 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('[data-danger]').forEach(function (item) {
             item.classList.remove('border-green-500', 'border-orange-500', 'border-red-500', 'bg-gray-50');
             if (item.dataset.danger === danger && waterLevel.value !== '') {
-                item.classList.add(danger === 'low' ? 'border-green-500' : (danger === 'medium' ? 'border-orange-500' : 'border-red-500'), 'bg-gray-50');
+                const cls = danger === 'low' ? 'border-green-500' : (danger === 'medium' ? 'border-orange-500' : 'border-red-500');
+                item.classList.add(cls, 'bg-gray-50');
             }
         });
     });
     waterLevel.dispatchEvent(new Event('input'));
+
+    // ── file name preview ────────────────────────────────────────────────────
 
     document.getElementById('photo').addEventListener('change', function () {
         document.getElementById('photo-status').textContent = this.files.length

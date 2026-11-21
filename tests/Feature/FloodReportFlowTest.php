@@ -13,49 +13,39 @@ class FloodReportFlowTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_community_can_open_the_server_submitted_report_form(): void
+    public function test_community_can_open_the_public_report_form(): void
     {
-        $this->actingAs($this->makeUser('masyarakat'))
-            ->get(route('dashboard.laporan-banjir'))
+        $this->get(route('lapor-banjir'))
             ->assertOk()
-            ->assertSee(route('dashboard.laporan-banjir.store'))
+            ->assertSee(route('lapor-banjir.store'))
             ->assertSee('enctype="multipart/form-data"', false)
             ->assertSee('name="latitude"', false)
-            ->assertSee('name="photos[]"', false);
+            ->assertSee('name="contact_phone"', false);
     }
 
     public function test_community_report_is_saved_and_can_be_verified_by_a_bpbd_officer(): void
     {
         Storage::fake('local');
-        $reporter = $this->makeUser('masyarakat');
         $officer = $this->makeUser('petugas_bpbd');
 
-        $this->actingAs($reporter)
-            ->post(route('dashboard.laporan-banjir.store'), $this->reportData([
-                'photos' => [UploadedFile::fake()->image('flood.jpg')],
+        $this->post(route('lapor-banjir.store'), $this->reportData([
+                'photo' => UploadedFile::fake()->image('flood.jpg'),
+                'video' => UploadedFile::fake()->create('flood.mp4', 100, 'video/mp4'),
             ]))
-            ->assertRedirect(route('dashboard.laporan-saya'))
-            ->assertSessionHas('status');
+            ->assertRedirect(route('status-warga'))
+            ->assertSessionHas('submitted_reference');
 
         $report = FloodReport::with('photos')->firstOrFail();
-        $this->assertSame($reporter->id, $report->user_id);
+        $this->assertNull($report->user_id);
         $this->assertSame('pending', $report->status);
         $this->assertSame('medium', $report->danger_level);
         $this->assertMatchesRegularExpression('/^LPR-\d{4}-\d{6}$/', $report->report_number);
-        $this->assertCount(1, $report->photos);
         Storage::disk('local')->assertExists($report->photos->first()->path);
-
-        $this->actingAs($reporter)
-            ->get(route('dashboard.laporan-saya'))
-            ->assertOk()
-            ->assertSee($report->report_number)
-            ->assertSee('Menunggu Verifikasi');
 
         $this->actingAs($officer)
             ->get(route('petugas.verifikasi-laporan'))
             ->assertOk()
-            ->assertSee($report->report_number)
-            ->assertSee($reporter->name);
+            ->assertSee($report->report_number);
 
         $this->actingAs($officer)
             ->post(route('petugas.verifikasi-laporan.update', $report), [
@@ -70,30 +60,41 @@ class FloodReportFlowTest extends TestCase
         $this->assertNotNull($report->verified_at);
     }
 
-    public function test_community_member_can_only_see_their_own_reports(): void
+    public function test_community_member_can_check_their_report_status(): void
     {
-        $owner = $this->makeUser('masyarakat');
-        $other = $this->makeUser('masyarakat');
-        $ownReport = $this->makeReport($owner);
-        $otherReport = $this->makeReport($other);
+        $report = FloodReport::create([
+            'report_number' => 'LPR-2611-000001',
+            'user_id' => null,
+            'reporter_name' => 'Warga Uji',
+            'contact_phone' => '081234567890',
+            'title' => 'Banjir dekat pasar',
+            'description' => 'Air mulai menggenangi jalan depan pasar.',
+            'occurred_at' => now()->subHour(),
+            'village' => 'Uteunkot',
+            'latitude' => 5.18,
+            'longitude' => 97.15,
+            'water_level_cm' => 45,
+            'danger_level' => 'medium',
+            'status' => 'pending',
+        ]);
 
-        $this->actingAs($owner)
-            ->get(route('dashboard.laporan-saya'))
+        $this->post(route('status-warga'), [
+            'type' => 'flood_report',
+            'reference' => $report->report_number,
+            'contact_phone' => '081234567890',
+        ])
             ->assertOk()
-            ->assertSee($ownReport->report_number)
-            ->assertDontSee($otherReport->report_number);
+            ->assertSee($report->report_number);
     }
 
     public function test_report_requires_valid_coordinates_and_agreement(): void
     {
-        $user = $this->makeUser('masyarakat');
         $data = $this->reportData();
         unset($data['latitude'], $data['agreement']);
 
-        $this->actingAs($user)
-            ->from(route('dashboard.laporan-banjir'))
-            ->post(route('dashboard.laporan-banjir.store'), $data)
-            ->assertRedirect(route('dashboard.laporan-banjir'))
+        $this->from(route('lapor-banjir'))
+            ->post(route('lapor-banjir.store'), $data)
+            ->assertRedirect(route('lapor-banjir'))
             ->assertSessionHasErrors(['latitude', 'agreement']);
 
         $this->assertDatabaseCount('flood_reports', 0);
@@ -226,15 +227,16 @@ class FloodReportFlowTest extends TestCase
     private function reportData(array $overrides = []): array
     {
         return array_replace([
-            'title' => 'Jalan depan pasar terendam',
             'description' => 'Air menggenangi jalan dan mulai masuk ke halaman rumah warga.',
             'occurred_at' => now()->subHour()->format('Y-m-d\TH:i'),
             'village' => 'Uteunkot',
             'address' => 'Jalan Pasar',
             'latitude' => '5.1801000',
             'longitude' => '97.1500000',
-            'water_level_cm' => 45,
-            'impacts' => ['jalan_tergenang'],
+            'water_level_m' => 0.45,
+            'flow_condition' => 'slow',
+            'reporter_name' => 'Warga Uji',
+            'contact_phone' => '081234567890',
             'agreement' => '1',
         ], $overrides);
     }

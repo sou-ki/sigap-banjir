@@ -62,7 +62,7 @@ class User extends Authenticatable
             'admin_sistem'        => route('admin.dashboard'),
             'petugas_bpbd'        => route('petugas.dashboard'),
             'koordinator_relawan' => route('koordinator.dashboard'),
-            default               => route('dashboard.beranda'),
+            default               => route('home'),
         };
     }
 
